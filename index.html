@@ -1,0 +1,303 @@
+# Creating a starter static website template for "Messiah Made".
+# This will write index.html, style.css, script.js, and a README, then zip them for download.
+
+import os, zipfile, textwrap
+
+output_dir = "/mnt/data/messiah_made_starter"
+os.makedirs(output_dir, exist_ok=True)
+
+index_html = """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Messiah Made — Streetwear with Purpose</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="logo">MM</div>
+        <div class="brand-text">
+          <h1>Messiah Made</h1>
+          <p class="tag">Streetwear with Purpose</p>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#shop">Shop</a>
+        <a href="#lookbook">Lookbook</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="cta">Shop</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-text">
+          <h2>Made by Faith. Worn with Purpose.</h2>
+          <p>Limited drops · Clean cuts · Bold statements</p>
+          <a href="#shop" class="btn-primary">Shop Now</a>
+        </div>
+        <div class="hero-image">
+          <img src="https://via.placeholder.com/640x420?text=Messiah+Made+Hero" alt="Messiah Made hero">
+        </div>
+      </div>
+    </section>
+
+    <section id="shop" class="shop container">
+      <h3>Featured</h3>
+      <div class="product-grid">
+        <article class="product">
+          <img src="https://via.placeholder.com/400x420?text=Hoodie+1" alt="">
+          <h4>Messiah Hoodie</h4>
+          <p class="price">$45</p>
+          <div class="product-actions">
+            <button class="btn-add">Add to cart</button>
+            <button class="btn-view" onclick="openProduct('Messiah Hoodie')">View</button>
+          </div>
+        </article>
+
+        <article class="product">
+          <img src="https://via.placeholder.com/400x420?text=TEE+1" alt="">
+          <h4>Faith Tee</h4>
+          <p class="price">$25</p>
+          <div class="product-actions">
+            <button class="btn-add">Add to cart</button>
+            <button class="btn-view" onclick="openProduct('Faith Tee')">View</button>
+          </div>
+        </article>
+
+        <article class="product">
+          <img src="https://via.placeholder.com/400x420?text=Cap+1" alt="">
+          <h4>MM Cap</h4>
+          <p class="price">$20</p>
+          <div class="product-actions">
+            <button class="btn-add">Add to cart</button>
+            <button class="btn-view" onclick="openProduct('MM Cap')">View</button>
+          </div>
+        </article>
+      </div>
+      <p class="note">This starter template uses placeholders. Connect a cart (Ecwid / PayPal / Stripe) when ready.</p>
+    </section>
+
+    <section id="lookbook" class="lookbook">
+      <div class="container">
+        <h3>Lookbook</h3>
+        <div class="look-grid">
+          <img src="https://via.placeholder.com/360x480?text=Look+1" alt="">
+          <img src="https://via.placeholder.com/360x480?text=Look+2" alt="">
+          <img src="https://via.placeholder.com/360x480?text=Look+3" alt="">
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="about container">
+      <h3>About Messiah Made</h3>
+      <p>Messiah Made is a faith-forward streetwear brand blending scripture-inspired messages with modern design.
+      We start small with tees, hoodies, and caps — built for community, purpose, and culture.</p>
+      <ul>
+        <li>Mission: Faith meets culture — bold but respectful.</li>
+        <li>Drops: Limited runs to keep quality high and stories meaningful.</li>
+      </ul>
+    </section>
+
+    <section id="contact" class="contact container">
+      <h3>Contact</h3>
+      <p>Email: <a href="mailto:hello@messiahmade.example">hello@messiahmade.example</a></p>
+      <p>Follow us: 
+        <a href="#" aria-label="Instagram">IG</a> · 
+        <a href="#" aria-label="TikTok">TikTok</a>
+      </p>
+
+      <form id="contact-form" onsubmit="handleContact(event)">
+        <label>
+          Your email
+          <input type="email" id="email" required placeholder="you@example.com">
+        </label>
+        <label>
+          Message
+          <textarea id="message" rows="4" required placeholder="Howdy — tell us about your interest..."></textarea>
+        </label>
+        <button class="btn-primary" type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year"></span> Messiah Made — All rights reserved.</p>
+      <p class="small">Built with ❤️ · Starter template for Netlify deployment</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+"""
+
+style_css = """/* style.css - Messiah Made starter styles */
+:root{
+  --bg:#0b0b0b;
+  --surface:#0f0f0f;
+  --muted:#9aa0a6;
+  --accent:#d4af37; /* gold accent */
+  --white:#ffffff;
+  --container:1100px;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--white);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.5;
+}
+
+.container{
+  max-width:var(--container);
+  margin:0 auto;
+  padding:1.5rem;
+}
+
+/* Header */
+.site-header{
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  border-bottom:1px solid rgba(255,255,255,0.03);
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.header-inner{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:.8rem}
+.logo{
+  width:48px;height:48px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;background:var(--white);color:var(--bg);
+}
+.brand-text h1{margin:0;font-size:1.05rem;letter-spacing:.6px}
+.brand-text .tag{margin:0;font-size:.8rem;color:var(--muted)}
+
+/* nav */
+.nav a{color:var(--muted);text-decoration:none;margin-right:1rem;font-weight:600}
+.cta{background:transparent;border:1px solid var(--white);padding:.45rem .8rem;border-radius:6px;color:var(--white);cursor:pointer}
+
+/* Hero */
+.hero{padding:3.5rem 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.hero-inner{display:flex;gap:2rem;align-items:center;flex-wrap:wrap}
+.hero-text{flex:1 1 360px}
+.hero-text h2{font-size:2.2rem;margin:0 0 .4rem}
+.hero-text p{color:var(--muted);margin:0 0 1rem}
+.btn-primary{display:inline-block;background:var(--accent);color:var(--bg);padding:.7rem 1rem;border-radius:8px;text-decoration:none;font-weight:700}
+
+/* Shop */
+.shop h3{margin-top:1rem}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.product{background:var(--surface);padding:1rem;border-radius:10px;text-align:center}
+.product img{width:100%;height:auto;border-radius:8px;object-fit:cover}
+.product h4{margin:.6rem 0 .2rem}
+.product .price{color:var(--muted);margin-bottom:.6rem}
+.product-actions{display:flex;gap:.5rem;justify-content:center}
+.btn-add{background:transparent;border:1px solid var(--white);padding:.4rem .6rem;border-radius:6px;color:var(--white);cursor:pointer}
+.btn-view{background:transparent;border:1px dashed var(--muted);padding:.4rem .6rem;border-radius:6px;color:var(--muted);cursor:pointer}
+.note{color:var(--muted);font-size:.9rem;margin-top:.6rem}
+
+/* Lookbook */
+.lookbook{padding:2rem 0;border-top:1px solid rgba(255,255,255,0.03)}
+.look-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.look-grid img{width:100%;height:auto;border-radius:8px;}
+
+/* About */
+.about{padding:1.5rem 0;border-top:1px solid rgba(255,255,255,0.03)}
+.about p{color:var(--muted)}
+
+/* Contact */
+.contact form{display:grid;gap:.6rem;max-width:540px}
+.contact input,.contact textarea{padding:.6rem;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--white)}
+
+/* Footer */
+.site-footer{padding:1.2rem 0;border-top:1px solid rgba(255,255,255,0.03);color:var(--muted);text-align:center;font-size:.9rem}
+.small{color:rgba(255,255,255,0.35)}
+
+/* Responsive */
+@media (max-width:880px){
+  .hero-inner{flex-direction:column-reverse}
+  .nav{display:none}
+  .cta{display:inline-block}
+}
+"""
+
+script_js = """// script.js - basic interactivity for the starter site
+document.getElementById('year').textContent = new Date().getFullYear();
+
+function openProduct(name){
+  alert('Product: ' + name + '\\nThis is a placeholder. Connect a cart service to enable purchases.');
+}
+
+function handleContact(e){
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const message = document.getElementById('message').value.trim();
+  if(!email || !message){ alert('Please fill the form.'); return; }
+  alert('Thanks! Your message has been received (placeholder).\\nEmail: ' + email);
+  e.target.reset();
+}
+"""
+
+readme_txt = textwrap.dedent("""\
+    Messiah Made — Starter static site template
+    ------------------------------------------
+    Files:
+      - index.html
+      - style.css
+      - script.js
+      - README.txt
+
+    How to use:
+      1. Download and unzip the files.
+      2. Edit the HTML/CSS to match your brand (logo, colors, images).
+      3. Push the files to your GitHub repo (root) and connect the repo to Netlify.
+         - For a simple static site, leave the build command empty and publish directory as '/'.
+      4. Netlify will auto-deploy on push. Your free site will be available at <site-name>.netlify.app.
+
+    Notes:
+      - Replace placeholder images with your own product and lookbook photography.
+      - To accept payments, integrate Ecwid, PayPal buttons, or a Stripe checkout flow.
+      - This is a lightweight starter to get your Messiah Made brand online quickly.
+    """)
+
+# write files
+files = {
+    "index.html": index_html,
+    "style.css": style_css,
+    "script.js": script_js,
+    "README.txt": readme_txt
+}
+
+for fname, content in files.items():
+    path = os.path.join(output_dir, fname)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+# zip the folder
+zip_path = "/mnt/data/messiah_made_starter.zip"
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+    for fname in files:
+        zf.write(os.path.join(output_dir, fname), arcname=fname)
+
+zip_path
+
